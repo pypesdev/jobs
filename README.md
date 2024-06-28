@@ -101,3 +101,7 @@ Then enqueue the task to the remote driver with:
 options = Options()
 driver = webdriver.Remote(command_executor='http://localhost:4444', options=options)
 ```
+
+# TODO:
+- [ ] fix fill_invalids select option
+- [ ] don't select yes to requiring a visa

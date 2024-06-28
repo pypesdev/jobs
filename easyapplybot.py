@@ -193,11 +193,6 @@ class EasyApplyBot:
                             IDs.append(int(jobID))
                 jobIDs: list = set(IDs)
 
-                # # remove already applied jobs
-                # before: int = len(IDs)
-                # jobIDs: list = [x for x in IDs if x not in self.appliedJobIDs]
-                # after: int = len(jobIDs)
-
                 # it assumed that 25 jobs are listed in the results window
                 if len(jobIDs) == 0 and len(IDs) > 23:
                     jobs_per_page = jobs_per_page + 25
@@ -217,7 +212,7 @@ class EasyApplyBot:
                         string_easy = "* has Easy Apply Button"
                         log.info("Clicking the EASY apply button")
                         time.sleep(3)
-                        #self.fill_out_phone_number()
+                        self.fill_out_phone_number()
                         result: bool = self.send_resume()
                         count_application += 1
                     else:
@@ -297,52 +292,50 @@ class EasyApplyBot:
             log.error("exception in get_easy_apply_button", e)
             return False        
 
-    # def fill_out_phone_number(self):
-    #     def is_present(button_locator) -> bool:
-    #         return len(self.browser.find_elements(button_locator[0],
-    #                                               button_locator[1])) > 0
-    #     # try:
-    #     next_locater = (By.CSS_SELECTOR,
-    #                     "button[aria-label='Continue to next step']")
-    #     input_field = self.browser.find_element("xpath", "//input[contains(@id,'phoneNumber')]")
+    def fill_out_phone_number(self):
+        def is_present(button_locator) -> bool:
+            return len(self.browser.find_elements(button_locator[0],
+                                                  button_locator[1])) > 0
+        try:
+            next_locater = (By.CSS_SELECTOR,
+                            "button[aria-label='Continue to next step']")
+            input_field = self.browser.find_element("xpath", "//input[contains(@id,'phoneNumber')]")
 
 
-    #     if input_field:
-    #         input_field.clear()
-    #         input_field.send_keys(self.phone_number)
-    #         time.sleep(random.uniform(4.5, 6.5))
-        
+            if input_field:
+                input_field.clear()
+                input_field.send_keys(self.phone_number)
+                time.sleep(random.uniform(4.5, 6.5))
+            
 
 
-    #         next_locater = (By.CSS_SELECTOR,
-    #                         "button[aria-label='Continue to next step']")
-    #         error_locator = (By.CLASS_NAME,
-    #                          "artdeco-inline-feedback__message")
+                next_locater = (By.CSS_SELECTOR,
+                                "button[aria-label='Continue to next step']")
+                error_locator = (By.CLASS_NAME,
+                                "artdeco-inline-feedback__message")
 
-    #         # Click Next or submitt button if possible
-    #         button: None = None
-    #         if is_present(next_locater):
-    #             button: None = self.wait.until(EC.element_to_be_clickable(next_locater))
+                # Click Next or submitt button if possible
+                button: None = None
+                if is_present(next_locater):
+                    button: None = self.wait.until(EC.element_to_be_clickable(next_locater))
 
-    #         if is_present(error_locator):
-    #             for element in self.browser.find_elements(error_locator[0],
-    #                                                         error_locator[1]):
-    #                 text = element.text
-    #                 if "Please enter" in text:
-    #                     button = None
-    #                     break
-    #         if button:
-    #             button.click()
-    #             time.sleep(random.uniform(1.5, 2.5))
-    #             # if i in (3, 4):
-    #             #     submitted = True
-    #             # if i != 2:
-    #             #     break
+                if is_present(error_locator):
+                    for element in self.browser.find_elements(error_locator[0],
+                                                                error_locator[1]):
+                        text = element.text
+                        if "Please enter" in text:
+                            button = None
+                            break
+                if button:
+                    button.click()
+                    time.sleep(random.uniform(1.5, 2.5))
+                    # if i in (3, 4):
+                    #     submitted = True
+                    # if i != 2:
+                    #     break
 
-
-
-    #     else:
-    #         log.debug(f"Could not find phone number field")
+        except:
+            log.debug(f"Could not find phone number field")
                 
 
 
