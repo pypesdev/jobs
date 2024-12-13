@@ -16,6 +16,7 @@ import re
 import yaml
 from datetime import datetime, timedelta
 import chromedriver_autoinstaller
+from urllib.parse import urlparse, parse_qs
 
 log = logging.getLogger(__name__)
 chromedriver_autoinstaller.install()  # Check if the current version of chromedriver exists
@@ -111,8 +112,7 @@ class EasyApplyBot:
         try:
             user_field = self.browser.find_element("id","username")
             pw_field = self.browser.find_element("id","password")
-            login_button = self.browser.find_element("xpath",
-                        '//*[@id="organic-div"]/form/div[3]/button')
+            login_button = driver.find_element(By.CLASS_NAME, "btn__primary--large")
             user_field.send_keys(username)
             user_field.send_keys(Keys.TAB)
             time.sleep(2)
@@ -172,7 +172,6 @@ class EasyApplyBot:
                 log.debug(f"Sleeping for {round(randoTime, 1)}")
                 time.sleep(randoTime)
                 self.load_page(sleep=1)
-                time.sleep(2)
                 # get job links, (the following are actually the job card objects)
                 links = self.browser.find_elements("xpath",
                     '//div[@data-job-id]'
@@ -183,14 +182,18 @@ class EasyApplyBot:
                 IDs: list = []
                 # children selector is the container of the job cards on the left
                 for link in links:
-                    children = link.find_elements("xpath",
-                        '//ul[@class="scaffold-layout__list-container"]'
+                    # Find anchor tags within each link
+                    children = link.find_elements(
+                        "xpath", './/a[contains(@class, "job-card-container__link")]'
                     )
                     for child in children:
-                        if child.text not in self.blacklist:
-                            temp = link.get_attribute("data-job-id")
-                            jobID = temp.split(":")[-1]
-                            IDs.append(int(jobID))
+                        href = child.get_attribute("href")
+                        if href:
+                            # Extract the job ID from the href
+                            parsed_url = urlparse(href)
+                            job_id = parsed_url.path.split('/')[-2]  # Extract the job ID from the URL path
+                            if job_id and int(job_id) not in self.blacklist:
+                                IDs.append(int(job_id))
                 jobIDs: list = set(IDs)
 
                 # it assumed that 25 jobs are listed in the results window
@@ -227,7 +230,7 @@ class EasyApplyBot:
 
                     # sleep every 20 applications
                     if count_application != 0 and count_application % 20 == 0:
-                        sleepTime: int = random.randint(300, 500)
+                        sleepTime: int = random.randint(100, 300)
                         log.info(f"""********count_application: {count_application}************\n\n
                                     Time for a nap - see you in:{int(sleepTime / 60)} min
                                 ****************************************\n\n""")
@@ -488,7 +491,7 @@ class EasyApplyBot:
     def next_jobs_page(self, position, location, jobs_per_page):
         self.browser.get(
             "https://www.linkedin.com/jobs/search/?f_LF=f_AL&keywords=" +
-            position + location + "&start=" + str(jobs_per_page))
+            position + location + "&sortBy=DD&start=" + str(jobs_per_page))
         self.avoid_lock()
         log.info("Lock avoided.")
         self.load_page()
