@@ -1,0 +1,25 @@
+username: LINKEDIN_EMAIL
+password: LINKEDIN_PASSWORD
+phone_number: PHONE_NUMBER
+
+positions:
+  - POSITION_1
+  - POSITION_2
+  - POSITION_3
+
+locations:
+  - Remote
+# --------- Optional Parameters -------
+# uploads:
+#Resume:
+#Cover Letter: # PATH TO cover letter
+#Photo: # PATH TO photo
+
+# output_filename:
+# - # PATH TO OUTPUT FILE (default output.csv)
+
+# blacklist:
+# - # Company names you want to ignore
+
+#blackListTitles:
+#- # Add job titles you want to ignore
